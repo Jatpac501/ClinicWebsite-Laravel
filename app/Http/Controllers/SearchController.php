@@ -15,7 +15,7 @@ class SearchController extends Controller
     }
 
     public function searchBySpeciality(Speciality $speciality) {
-        $doctors = Doctor::where('speciality_id', $speciality->id)->with(['speciality', 'user'])->get();
+        $doctors = Doctor::whereBelongsTo($speciality)->with(['speciality', 'user'])->get();
         return view('search', compact('doctors', 'speciality'));
     }
 }

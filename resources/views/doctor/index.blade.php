@@ -13,7 +13,7 @@
             @csrf
             <div>
                 <label for="time">Выберите день:</label>
-                <input type="date" name="date" id="date" value="" min="" required/>
+                <input type="date" name="date" id="date" min="{{ now()->toDateString() }}" max="{{ now()->addDays(7)->toDateString() }}" required />
             </div>
             <div>
                 <label for="time">Выберите время:</label>
@@ -34,11 +34,14 @@
             const timeInput = document.getElementById('time');
 
             const setDate = () => {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
-                dateInput.min = today;
+                const today = new Date();
+                dateInput.value = today.toISOString().split('T')[0];
                 loadAvailableTimes();
             }
+            const isWeekend = (date) => {
+                const day = new Date(date).getDay();
+                return day === 0 || day === 6;
+            };
             const loadAvailableTimes = async () => {
                 timeInput.innerHTML = '<option>Загрузка...</option>';
                 try {
@@ -74,7 +77,14 @@
                 return slots;
             }
 
-            dateInput.addEventListener('change', loadAvailableTimes);
+            dateInput.addEventListener('change', () => {
+                if (isWeekend(dateInput.value)) {
+                    timeInput.innerHTML = '<option>Выходной день</option>';
+                } else {
+                    loadAvailableTimes();
+                }
+            });
+
             setDate(); 
         });
     </script>

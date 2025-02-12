@@ -1,91 +1,42 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Результаты поиска врачей') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    
-    <div class="">
-        <div class="">Врач {{ $doctor->speciality->name }}</div>
-        <div class="">{{ $doctor->user->name }}</div>
-        <div class="">Стаж: {{ $doctor->experience }} лет</div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if ($doctors->isEmpty())
+                <div class="text-center text-gray-600">
+                    <p class="text-lg font-medium">По вашему запросу ничего не найдено.</p>
+                    <p class="text-sm text-gray-500 mt-2">Попробуйте изменить параметры поиска.</p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach ($doctors as $doctor)
+                        <a 
+                            href="{{ route('doctor.index', $doctor) }}" 
+                            class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                        >
+                            <div class="p-4 text-center">
+                                <div class="mb-4">
+                                    <img 
+                                        src="{{ $doctor->user->avatar ?? asset('default-avatar.webp') }}" 
+                                        alt="{{ $doctor->user->name }} Avatar" 
+                                        class="w-20 h-20 mx-auto rounded-full object-cover border-2 border-primary-500"
+                                    >
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900">{{ $doctor->user->name }}</h3>
+                                <p class="text-sm text-gray-600 mt-2">
+                                    {{ $doctor->speciality->name ?? 'Специальность не указана' }} | 
+                                    Стаж {{ $doctor->experience }} лет
+                                </p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
-    <div>
-        <h2>Запись к врачу</h2>
-        <form method="POST" action="{{ route('appointments.store', $doctor->id) }}">
-            @csrf
-            <div>
-                <label for="time">Выберите день:</label>
-                <input type="date" name="date" id="date" min="{{ now()->toDateString() }}" max="{{ now()->addDays(7)->toDateString() }}" required />
-            </div>
-            <div>
-                <label for="time">Выберите время:</label>
-                <select name="time" id="time" required>Выберите время</select>
-            </div>
-            <div>
-                <button type="submit">Записаться</button>
-            </div>
-        </form>
-    </div>   
-
-@endsection
-
-@section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dateInput = document.getElementById('date');
-            const timeInput = document.getElementById('time');
-
-            const setDate = () => {
-                const today = new Date();
-                dateInput.value = today.toISOString().split('T')[0];
-                loadAvailableTimes();
-            }
-            const isWeekend = (date) => {
-                const day = new Date(date).getDay();
-                return day === 0 || day === 6;
-            };
-            const loadAvailableTimes = async () => {
-                timeInput.innerHTML = '<option>Загрузка...</option>';
-                try {
-                    const response = await fetch(`/doctor/{{ $doctor->id }}/appointments/booked-times?date=${dateInput.value}`);
-                    if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-                    const bookedTimes = await response.json();
-
-                    const availableTimes = genTimeSlots();
-
-                    timeInput.innerHTML = '<option value="">Выберите время</option>';
-
-                    availableTimes.forEach(time => {
-                        const option = document.createElement('option');
-                        option.value = time;
-                        option.textContent = bookedTimes.includes(time) ? `${time} (занято)` : time;
-                        option.disabled = bookedTimes.includes(time);
-                        timeInput.appendChild(option);
-                    });
-                } catch (error) {
-                    console.error('Ошибка:', error);
-                    timeInput.innerHTML = '<option>Ошибка загрузки</option>';
-                }
-            }
-
-            const genTimeSlots = () => {
-                const slots = [];
-                for (let hour = 9; hour < 20; hour++) {
-                    if (hour === 13) continue;
-                    for (let minute = 0; minute < 60; minute += 20) {
-                        slots.push(`${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
-                    }
-                }
-                return slots;
-            }
-
-            dateInput.addEventListener('change', () => {
-                if (isWeekend(dateInput.value)) {
-                    timeInput.innerHTML = '<option>Выходной день</option>';
-                } else {
-                    loadAvailableTimes();
-                }
-            });
-
-            setDate(); 
-        });
-    </script>
-@endsection
+</x-app-layout>

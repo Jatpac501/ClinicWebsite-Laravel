@@ -19,7 +19,7 @@ class DoctorFactory extends Factory
         return [
             'user_id' => User::where('role', 'doctor')->inRandomOrder()->first()->id,
             'speciality_id' => Speciality::inRandomOrder()->first()->id,
-            'experience' => fake()->numberBetween(5, 40)
+            'experience' => fake()->numberBetween(5, 20)
         ];
     }
 }

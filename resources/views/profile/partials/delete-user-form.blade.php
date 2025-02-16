@@ -52,4 +52,4 @@
             </div>
         </form>
     </x-modal>
-</section>ы
+</section>

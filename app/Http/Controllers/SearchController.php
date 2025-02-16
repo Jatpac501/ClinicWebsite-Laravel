@@ -20,16 +20,14 @@ class SearchController extends Controller
     }
 
     public function search(Request $request) {
-        $query = $request->query('query');
-
+        $query = strtolower(trim($request->query('query')));
         $doctors = Doctor::whereHas('user', function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%");
+                $q->whereRaw('LOWER(name) like ?', ["%{$query}%"]);
             })
             ->orWhereHas('speciality', function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%");
+                $q->whereRaw('LOWER(name) like ?', ["%{$query}%"]);
             })
             ->get();
-
         return view('doctor.index', compact('doctors', 'query'));
     }
 }

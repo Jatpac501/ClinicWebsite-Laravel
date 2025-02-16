@@ -15,6 +15,18 @@
                     <x-nav-link :href="route('homepage')" :active="request()->routeIs('homepage')">
                         {{ __('Главная') }}
                     </x-nav-link>
+                    @auth
+                        @if (Auth::user()->isDoctor())
+                            <x-nav-link :href="route('doctor.panel')" :active="request()->routeIs('doctor.panel')">
+                                {{ __('Панель врача') }}
+                            </x-nav-link>
+
+                        @elseif (Auth::user()->isAdmin())
+                            <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                                {{ __('Панель админа') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
@@ -85,8 +97,15 @@
             <x-responsive-nav-link :href="route('homepage')" :active="request()->routeIs('homepage')">
                 {{ __('Главная') }}
             </x-responsive-nav-link>
+            @auth
+                @if (Auth::user()->isDoctor())
+                    <x-responsive-nav-link :href="route('doctor.panel')" :active="request()->routeIs('doctor.panel')">
+                        {{ __('Панель врача') }}
+                    </x-responsive-nav-link> 
+                @endif
+            @endauth
         </div>
-
+    
         <!-- Responsive Settings Options -->
         @auth
         <div class="pt-4 pb-1 border-t border-gray-200">
@@ -99,6 +118,7 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Профиль') }}
                 </x-responsive-nav-link>
+                
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
@@ -111,6 +131,15 @@
                     </x-responsive-nav-link>
                 </form>
             </div>
+        </div>
+        @else
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                {{ __('Войти') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
+                {{ __('Зарегистрироваться') }}
+            </x-responsive-nav-link>
         </div>
         @endauth
     </div>

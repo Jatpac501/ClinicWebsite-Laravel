@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Appointment;
 use App\Models\User;
 use App\Models\Speciality;
 use App\Models\Doctor;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Администратор',
             'email' => 'admin@example.com',
+            'password'=> bcrypt('admin'),
             'phone' => '+7 (999) 123-45-67',
             'role' => 'admin'
         ]);
@@ -29,5 +31,6 @@ class DatabaseSeeder extends Seeder
             $user->update(['role' => 'doctor']);
             Doctor::factory()->create(['user_id' => $user->id]);
         }
+        Appointment::factory(50)->create();
     }
 }

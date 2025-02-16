@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('time');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->nullable();
-            $table->enum('status', ['scheduled', 'completed', 'cancelled'])->default('scheduled');
+            $table->enum('status', ['Запланировано', 'Завершено', 'Отменено'])->default('Запланировано');
             $table->string('file_path')->nullable();
             $table->timestamps();
         });

@@ -43,12 +43,13 @@
                         </select>
                         <x-input-error :messages="$errors->get('time')" class="mt-2" />
                     </div>
-
+                    @auth
                     <div>
                         <x-primary-button>
                             Записаться
                         </x-primary-button>
                     </div>
+                    @endauth
                 </form>
             </div>
         </div>
@@ -98,7 +99,7 @@
                 }
             };
 
-
+            
             dateInput.addEventListener('change', () => {
                 if (isWeekend(dateInput.value)) {
                     timeInput.innerHTML = '<option disabled>Выходной день</option>';

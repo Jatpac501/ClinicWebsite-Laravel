@@ -12,68 +12,53 @@ class AppointmentController extends Controller
 {
     public function store(StoreAppointmentRequest $request, Doctor $doctor) {
         $validated = $request->validated();
-        $isBooked = Appointment::where('doctor_id', $doctor->id)
-                           ->where('date', $validated['date'])
-                           ->where('time', $validated['time'])
-                           ->exists();
-
-        if ($isBooked) {
+        
+        if (Appointment::where(['doctor_id' => $doctor->id, 'date' => $validated['date'], 'time' => $validated['time']])->exists()) {
             return back();
         }
-        Appointment::create([
-            'date'=> $request->date,
-            'time'=> $request->time,
-            'doctor_id'=> $doctor->id,
-            'user_id' => Auth::user()->id,
+        
+        $doctor->appointments()->create([
+            'date' => $validated['date'],
+            'time' => $validated['time'],
+            'user_id' => Auth::id(),
         ]);
+        
         return back();
     }
 
     public function getBookedTimes(Request $request, Doctor $doctor) {
-        $date = $request->query("date");
-        if (!$date) return response()->json([]);
+        $date = $request->query('date');
+        
+        return response()->json($date ? $doctor->appointments()->where('date', $date)->pluck('time') : []);
+    }
 
-        $appointments = $doctor->appointments()
-                            ->where('date', $date)
-                            ->pluck('time')
-                            ->toArray();
-        return response()->json($appointments);
+    private function updateStatus($appointmentId, $status) {
+        $appointment = Appointment::findOrFail($appointmentId);
+        $appointment->update(['status' => $status]);
+        return back();
     }
 
     public function complete($userId, $appointmentId) {
-        $appointment = Appointment::findOrFail($appointmentId);
-        $appointment->status = 'Завершено';
-        $appointment->save();
-        
-        return back();
+        return $this->updateStatus($appointmentId, 'Завершено');
     }
+
     public function cancel($userId, $appointmentId) {
-        $appointment = Appointment::findOrFail($appointmentId);
-        $appointment->status = 'Отменено';
-        $appointment->save();
-    
-        return back();
+        return $this->updateStatus($appointmentId, 'Отменено');
     }
 
     public function show($doctor, $id) {
-        $appointment = Appointment::findOrFail($id)->load('doctor', 'user');
+        $appointment = Appointment::with(['doctor', 'user'])->findOrFail($id);
         return view('appointment.show', compact('appointment'));
     }
 
     public function uploadFile(Request $request, $userId, $appointmentId) {
-        $request->validate([
-            'file' => 'required|mimes:pdf|max:2048',
-        ]);
-    
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $file = $request->file('file');
-            $path = $file->store('uploads/appointments', 'public');
-            $appointment = Appointment::findOrFail( $appointmentId );
-            $appointment->file_path = $path;
-            $appointment->save();
-            return back();
+        $validated = $request->validate(['file' => 'required|mimes:pdf|max:2048']);
+        
+        if ($request->hasFile('file')) {
+            $appointment = Appointment::findOrFail($appointmentId);
+            $appointment->update(['file_path' => $request->file('file')->store('uploads/appointments', 'public')]);
         }
-    
+        
         return back();
-    } 
+    }
 }

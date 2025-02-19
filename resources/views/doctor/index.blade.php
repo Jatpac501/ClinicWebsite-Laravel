@@ -17,7 +17,7 @@
                     @foreach ($doctors as $doctor)
                         <a 
                             href="{{ route('doctor.index', $doctor) }}" 
-                            class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+                            class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow transform hover:scale-105 overflow-hidden"
                         >
                             <div class="p-4 text-center">
                                 <div class="mb-4">
@@ -29,8 +29,13 @@
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900">{{ $doctor->user->name }}</h3>
                                 <p class="text-sm text-gray-600 mt-2">
-                                    {{ $doctor->speciality->name ?? 'Специальность не указана' }} | 
-                                    Стаж {{ $doctor->experience }} лет
+                                    <span class="font-medium text-gray-700">
+                                        {{ $doctor->speciality->name ?? 'Специальность не указана' }}
+                                    </span> 
+                                    |
+                                    <span class="ml-1 text-gray-500">
+                                        Стаж {{ $doctor->experience }} лет
+                                    </span>
                                 </p>
                             </div>
                         </a>

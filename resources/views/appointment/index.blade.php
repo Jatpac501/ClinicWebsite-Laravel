@@ -8,13 +8,19 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-4 lg:px-8">
             @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 11l3 3L22 4"></path>
+                    </svg>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                     {{ session('error') }}
                 </div>
             @endif
@@ -27,6 +33,8 @@
                     <p class="mt-1 max-w-2xl text-sm text-gray-500">
                         @if($appointments->isNotEmpty())
                             Показано {{ $appointments->count() }} записей
+                        @else
+                            Нет активных записей.
                         @endif
                     </p>
                 </div>

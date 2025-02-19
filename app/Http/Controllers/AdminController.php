@@ -9,7 +9,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $doctors = Doctor::orderBy('id', 'asc')->get();
+        $doctors = Doctor::orderBy('id')->get();
         return view('admin.index', compact('doctors'));
     }
 
@@ -20,13 +20,10 @@ class AdminController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name'       => 'required|string|max:255',
-            'experience' => 'required|integer|min:0',
-            'about'      => 'nullable|string',
-        ]);
+        $this->validateDoctor($request);
 
-        Doctor::create($data);
+        Doctor::create($request->validated());
+
         return redirect()->route('admin.index')
             ->with('success', 'Врач успешно добавлен');
     }
@@ -38,13 +35,10 @@ class AdminController extends Controller
 
     public function update(Request $request, Doctor $doctor)
     {
-        $data = $request->validate([
-            'name'       => 'required|string|max:255',
-            'experience' => 'required|integer|min:0',
-            'about'      => 'nullable|string',
-        ]);
+        $this->validateDoctor($request);
 
-        $doctor->update($data);
+        $doctor->update($request->validated());
+
         return redirect()->route('admin.index')
             ->with('success', 'Врач успешно обновлён');
     }
@@ -52,7 +46,17 @@ class AdminController extends Controller
     public function destroy(Doctor $doctor)
     {
         $doctor->delete();
+
         return redirect()->route('admin.index')
             ->with('success', 'Врач успешно удалён');
+    }
+
+    private function validateDoctor(Request $request)
+    {
+        $request->validate([
+            'name'       => 'required|string|max:255',
+            'experience' => 'required|integer|min:0',
+            'about'      => 'nullable|string',
+        ]);
     }
 }

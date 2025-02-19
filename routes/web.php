@@ -17,36 +17,45 @@ Route::get('/doctor/{doctor}/appointments/booked-times', [AppointmentController:
 
 // Маршруты для авторизованных пользователей
 Route::middleware('auth')->group(function () {
-    // Профиль пользователя
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+    });
 
     // Записи на приём
     Route::get('/doctor/{doctor}/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
     Route::post('/doctor/{doctor}/appointments/', [AppointmentController::class, 'store'])->name('appointments.store');
 
     // Работа с файлами
-    Route::get('/appointments/{id}/view-file', [AppointmentController::class, 'viewFile'])->name('appointments.viewFile');
-    Route::get('/appointments/{id}/download-file', [AppointmentController::class, 'downloadFile'])->name('appointments.downloadFile');
+    Route::prefix('appointments/{id}')->name('appointments.')->group(function () {
+        Route::get('/view-file', [AppointmentController::class, 'viewFile'])->name('viewFile');
+        Route::get('/download-file', [AppointmentController::class, 'downloadFile'])->name('downloadFile');
+    });
 });
 
 // Маршруты для врачей
 Route::middleware(['auth', 'doctor'])->group(function () {
+    Route::prefix('doctor/{doctor}/appointments/{id}')->name('appointments.')->group(function () {
+        Route::post('/uploadFile', [AppointmentController::class, 'uploadFile'])->name('uploadFile');
+        Route::post('/cancel', [AppointmentController::class, 'cancel'])->name('cancel');
+        Route::post('/complete', [AppointmentController::class, 'complete'])->name('complete');
+    });
+
+    // Панель врача
     Route::get('/panel', [PanelController::class, 'index'])->name('doctor.panel');
-    Route::post('/doctor/{doctor}/appointments/{id}/uploadFile', [AppointmentController::class, 'uploadFile'])->name('appointments.uploadFile');
-    Route::post('/doctor/{doctor}/appointments/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
-    Route::post('/doctor/{doctor}/appointments/{id}/complete', [AppointmentController::class, 'complete'])->name('appointments.complete');
 });
 
 // Маршруты для администраторов
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-    Route::get('/admin/edit', [AdminController::class, 'edit'])->name('admin.edit');
-    Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
-    Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
-    Route::patch('/admin/update', [AdminController::class, 'update'])->name('admin.update');
-    Route::delete('/admin/destroy', [AdminController::class, 'destroy'])->name('admin.destroy');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/edit', [AdminController::class, 'edit'])->name('edit');
+        Route::get('/create', [AdminController::class, 'create'])->name('create');
+        Route::post('/store', [AdminController::class, 'store'])->name('store');
+        Route::patch('/update', [AdminController::class, 'update'])->name('update');
+        Route::delete('/destroy', [AdminController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Маршруты аутентификации

@@ -89,8 +89,13 @@
                     availableTimes.forEach((time) => {
                         const option = document.createElement('option');
                         option.value = time;
-                        option.textContent = bookedTimes.includes(time) ? `${time} (занято)` : time;
-                        option.disabled = bookedTimes.includes(time);
+                        if (bookedTimes.includes(time)) {
+                            option.textContent = `${time} (занято)`;
+                            option.disabled = true;
+                            option.classList.add('text-red-500');
+                        } else {
+                            option.textContent = time;
+                        }
                         timeInput.appendChild(option);
                     });
                 } catch (error) {
@@ -99,7 +104,6 @@
                 }
             };
 
-            
             dateInput.addEventListener('change', () => {
                 if (isWeekend(dateInput.value)) {
                     timeInput.innerHTML = '<option disabled>Выходной день</option>';

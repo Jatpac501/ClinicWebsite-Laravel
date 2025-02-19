@@ -77,7 +77,7 @@
                                                 </svg>
                                             </a>
                                             
-                                            @if ($appointment->status == 'Запланированно')
+                                            @if ($appointment->status == 'Запланировано')
                                                 <form class="inline" method="POST" action="{{ route('appointments.complete', [Auth::user()->id, $appointment]) }}">
                                                     @csrf
                                                     <button type="submit" 

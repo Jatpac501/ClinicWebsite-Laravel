@@ -64,20 +64,20 @@
                 @if($appointment->status == 'Запланировано')
                     <div class="mt-8 border-t pt-6 flex gap-4">
                         @if(Auth::user()->role === 'doctor')
-                            <form method="POST" action="{{ route('appointments.complete', $appointment->id) }}">
+                            <form method="POST" action="{{ route('appointments.complete', [Auth::user()->id, $appointment->id]) }}">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white hover:bg-green-500">
                                     Завершить приём
                                 </button>
                             </form>
-                            <form method="POST" action="{{ route('appointments.cancel', $appointment->id) }}">
+                            <form method="POST" action="{{ route('appointments.cancel', [Auth::user()->id, $appointment->id]) }}">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white hover:bg-red-500">
                                     Отменить приём
                                 </button>
                             </form>
-                        @elseif(Auth::user()->role === 'patient')
-                            <form method="POST" action="{{ route('appointments.cancel', $appointment->id) }}">
+                        @elseif(Auth::user()->role === 'user')
+                            <form method="POST" action="{{ route('appointments.cancel', [Auth::user()->id, $appointment->id]) }}">
                                 @csrf
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white hover:bg-red-500">
                                     Отменить приём

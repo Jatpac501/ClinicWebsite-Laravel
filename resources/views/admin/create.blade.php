@@ -11,10 +11,25 @@
                 <form action="{{ route('admin.store') }}" method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Имя</label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        @error('name')
+                        <label for="user_id" class="block text-gray-700">Выберите пользователя</label>
+                        <select name="user_id" id="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                            @endforeach
+                        </select>
+                        @error('user_id')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="speciality_id" class="block text-gray-700">Выберите специальность</label>
+                        <select name="speciality_id" id="speciality_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            @foreach($specialities as $speciality)
+                                <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('speciality_id')
                             <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>

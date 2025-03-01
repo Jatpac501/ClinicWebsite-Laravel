@@ -48,15 +48,14 @@ Route::middleware(['auth', 'doctor'])->group(function () {
 
 // Маршруты для администраторов
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::get('/', [AdminController::class, 'index'])->name('index');
-        Route::get('/edit', [AdminController::class, 'edit'])->name('edit');
-        Route::get('/create', [AdminController::class, 'create'])->name('create');
-        Route::post('/store', [AdminController::class, 'store'])->name('store');
-        Route::patch('/update', [AdminController::class, 'update'])->name('update');
-        Route::delete('/destroy', [AdminController::class, 'destroy'])->name('destroy');
-    });
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
+    Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
+    Route::patch('/admin/update/{doctor}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/admin/destroy/{doctor}', [AdminController::class, 'destroy'])->name('admin.destroy');
 });
+
 
 // Маршруты аутентификации
 require __DIR__.'/auth.php';

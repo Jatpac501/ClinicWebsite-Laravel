@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DoctorRequest;
 use App\Models\Doctor;
+use App\Models\Speciality;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -15,48 +18,39 @@ class AdminController extends Controller
 
     public function create()
     {
-        return view('admin.create');
+        $users = User::whereNotIn('role', ['doctor', 'admin'])->get();
+        $specialities = Speciality::all();
+        return view('admin.create', compact('users', 'specialities'));
     }
 
-    public function store(Request $request)
+    
+    public function store(DoctorRequest $request)
     {
-        $this->validateDoctor($request);
-
         Doctor::create($request->validated());
 
-        return redirect()->route('admin.index')
-            ->with('success', 'Врач успешно добавлен');
+        return redirect()->route('admin.index')->with('success', 'Врач успешно добавлен!');
     }
 
-    public function edit(Doctor $doctor)
+    public function edit(Request $request)
     {
-        return view('admin.edit', compact('doctor'));
+        $doctor = Doctor::findOrFail($request->id)->load('user', 'speciality');
+        $specialities = Speciality::all();
+        return view('admin.edit', compact('doctor', 'specialities'));
     }
 
-    public function update(Request $request, Doctor $doctor)
+    public function update(DoctorRequest $request, Doctor $doctor)
     {
-        $this->validateDoctor($request);
-
         $doctor->update($request->validated());
 
         return redirect()->route('admin.index')
             ->with('success', 'Врач успешно обновлён');
     }
 
-    public function destroy(Doctor $doctor)
+    public function destroy(Request $request)
     {
-        $doctor->delete();
+        Doctor::findOrFail($request->doctor_id)->delete();
 
         return redirect()->route('admin.index')
             ->with('success', 'Врач успешно удалён');
-    }
-
-    private function validateDoctor(Request $request)
-    {
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'experience' => 'required|integer|min:0',
-            'about'      => 'nullable|string',
-        ]);
     }
 }

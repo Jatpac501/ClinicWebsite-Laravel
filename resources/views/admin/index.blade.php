@@ -34,12 +34,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $doctor->user->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $doctor->experience }} лет</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('admin.edit', $doctor->id) }}" class="text-indigo-600 hover:text-indigo-900">
+                                    <a href="{{ route('admin.edit', ["id" => $doctor->id]) }}" class="text-indigo-600 hover:text-indigo-900">
                                         Редактировать
                                     </a>
-                                    <form action="{{ route('admin.destroy', $doctor->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.destroy', $doctor) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
+                                        <input id="doctor_id" name="doctor_id" value="{{ $doctor->id }}" type="hidden" readonly />
                                         <button type="submit" class="text-red-600 hover:text-red-900 ml-2"
                                             onclick="return confirm('Вы уверены, что хотите удалить врача?')">
                                             Удалить

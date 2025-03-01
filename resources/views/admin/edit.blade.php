@@ -10,12 +10,24 @@
             <div class="bg-white shadow sm:rounded-lg p-6">
                 <form action="{{ route('admin.update', $doctor->id) }}" method="POST">
                     @csrf
-                    @method('PUT')
+                    @method('PATCH')
+                    <input id="user_id" name="user_id" value="{{ $doctor->user_id }}" type="hidden" readonly />
                     <div class="mb-4">
                         <label for="name" class="block text-gray-700">Имя</label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $doctor->name) }}"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                        @error('name')
+                        <input type="text" value="{{ $doctor->user->name }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
+
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="speciality_id" class="block text-gray-700">Выберите специальность</label>
+                        <select name="speciality_id" id="speciality_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            @foreach($specialities as $speciality)
+                                <option value="{{ $speciality->id }}" {{ optional($doctor->speciality)->id == $speciality->id ? 'selected' : '' }}>
+                                    {{ $speciality->name }}
+                                </option>                            
+                            @endforeach
+                        </select>
+                        @error('speciality_id')
                             <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
@@ -23,7 +35,8 @@
                     <div class="mb-4">
                         <label for="experience" class="block text-gray-700">Опыт (лет)</label>
                         <input type="number" name="experience" id="experience" value="{{ old('experience', $doctor->experience) }}"
-                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                            min="0" max="100">
                         @error('experience')
                             <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror

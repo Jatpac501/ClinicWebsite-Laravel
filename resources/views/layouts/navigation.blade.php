@@ -25,6 +25,10 @@
                             <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                                 {{ __('Панель админа') }}
                             </x-nav-link>
+                        @else
+                            <x-nav-link :href="route('appointment.panel')" :active="request()->routeIs('appointment.panel')">
+                                {{ __('Панель записей') }}
+                            </x-nav-link>
                         @endif
                     @endauth
                 </div>

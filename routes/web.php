@@ -23,9 +23,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
     });
 
+    Route::post('/appointments/{id}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+
     // Записи на приём
     Route::get('/doctor/{doctor}/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
     Route::post('/doctor/{doctor}/appointments/', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/appointment', [AppointmentController::class, 'panel'])->name('appointment.panel');
 
     // Работа с файлами
     Route::prefix('appointments/{id}')->name('appointments.')->group(function () {
@@ -38,7 +41,6 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'doctor'])->group(function () {
     Route::prefix('doctor/{doctor}/appointments/{id}')->name('appointments.')->group(function () {
         Route::post('/uploadFile', [AppointmentController::class, 'uploadFile'])->name('uploadFile');
-        Route::post('/cancel', [AppointmentController::class, 'cancel'])->name('cancel');
         Route::post('/complete', [AppointmentController::class, 'complete'])->name('complete');
     });
 

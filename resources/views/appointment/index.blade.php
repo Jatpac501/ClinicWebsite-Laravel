@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Панель врача:') }} {{ Auth::user()->name }}
+        {{ Auth::user()->name }}
         </h2>
     </x-slot>
 
@@ -86,6 +86,7 @@
                                             </a>
                                             
                                             @if ($appointment->status == 'Запланировано')
+                                                @if (Auth::user()->isDoctor())
                                                 <form class="inline" method="POST" action="{{ route('appointments.complete', [Auth::user()->id, $appointment]) }}">
                                                     @csrf
                                                     <button type="submit" 
@@ -96,7 +97,8 @@
                                                         </svg>
                                                     </button>
                                                 </form>
-                                                <form class="inline" method="POST" action="{{ route('appointments.cancel', [Auth::user()->id, $appointment]) }}">
+                                                @endif
+                                                <form class="inline" method="POST" action="{{ route('appointments.cancel', [$appointment->id]) }}">
                                                     @csrf
                                                     <button type="submit" 
                                                             class="text-red-600 hover:text-red-900"

@@ -42,7 +42,7 @@ class AppointmentController extends Controller
         return $this->updateStatus($appointmentId, 'Завершено');
     }
 
-    public function cancel($userId, $appointmentId) {
+    public function cancel($appointmentId) {
         return $this->updateStatus($appointmentId, 'Отменено');
     }
 
@@ -60,5 +60,16 @@ class AppointmentController extends Controller
         }
         
         return back();
+    }
+
+    public function panel() {
+        $user = Auth::user();
+        $appointments = $user ? $user->appointments()
+                ->orderBy('date', 'desc')
+                ->orderBy('time', 'desc')
+                ->get()
+            : collect();
+    
+        return view("appointment.index", compact('appointments'));
     }
 }
